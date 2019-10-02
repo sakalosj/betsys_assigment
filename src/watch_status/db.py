@@ -14,11 +14,7 @@ logger = logging.getLogger('watch_status.event_listener')
 def get_connection(DSN, schema, isolation_level):
     conn = psycopg2.connect(DSN)
     conn.set_isolation_level(isolation_level)
-    with conn.cursor() as curs:
-        query = 'SET search_path TO %s'
-        values = (schema,)
-        curs.execute(query, values)
-    conn.commit()
+    set_active_schema(conn, schema)
     return conn
 
 
@@ -83,7 +79,7 @@ def update_column(conn, table, column, pk_column, pk, value) -> None:
     with conn.cursor() as curs:
         query = sql.SQL('UPDATE {} SET {} = %s WHERE {} = %s').format(sql.Identifier(table), sql.Identifier(column),
                                                                       sql.Identifier(pk_column))
-        print(query)
+        # print(query)
         values = (value, pk)
         curs.execute(query, values)
     conn.commit()
