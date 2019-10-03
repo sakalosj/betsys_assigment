@@ -1,8 +1,7 @@
 import pytest
 from psycopg2._psycopg import Notify
 
-from watch_status import event_listener
-from watch_status.db import get_connection, set_active_schema, update_column
+from watch_status.db import get_connection, set_active_schema, update_column, db_event_loop
 
 
 @pytest.fixture(params=[
@@ -33,7 +32,7 @@ def test_event_listener_listen_called(mocker):
     stable_heap_mock = mocker.Mock()
 
     with pytest.raises(Exception, match='end loop'):
-        event_listener(conn_mock, 'test_channel', stable_heap_mock)
+        db_event_loop(conn_mock, 'test_channel', stable_heap_mock)
 
     stable_heap_mock.push.assert_called_once_with(1, payload_dict)
 
