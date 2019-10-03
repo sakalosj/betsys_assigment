@@ -59,7 +59,7 @@ def test_set_active_schema(mocker):
 
 
 def test_update_column(mocker):
-    # sql_mock = mocker.patch('watch_status.db.sql.SQL')
+    mocker.patch('watch_status.db.sql.SQL')
     conn_mock = mocker.MagicMock()
 
     update_column(conn_mock, 'table', 'column', 'pk_column', 'pk', 'value')

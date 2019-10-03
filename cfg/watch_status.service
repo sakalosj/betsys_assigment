@@ -1,0 +1,13 @@
+[Unit]
+Description=watch_status
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=saki
+WorkingDirectory=/home/saki/PycharmProjects/betsys_zadanie/watch_status/
+ExecStart=/home/saki/PycharmProjects/betsys_zadanie/watch_status/venv/bin/python ./src/runner.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

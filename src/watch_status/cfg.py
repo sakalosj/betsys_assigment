@@ -6,7 +6,8 @@ class Main:
     workers_output_file = 'status_changes.log'
 
 class Db:
-    DSN = 'postgresql://postgres:postgres@192.168.99.101/postgres'
+    # DSN = 'postgresql://postgres:postgres@192.168.99.101/postgres'
+    DSN = 'postgresql://postgres:password@localhost/postgres'
     schema = 'betsys'
     channel = 'events'
 
