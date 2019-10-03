@@ -31,14 +31,18 @@ def worker(conn, stable_heap, id, file_name=cfg.main.workers_output_file) -> Non
     while not sig_handler.finish:
         while not stable_heap.empty():
             event_data = stable_heap.pop()
-            logger.debug('{}: processing {}'.format(id, event_data))
-            table = event_data['table']
-            column = 'logged_at'
-            pk_column = 'id'
-            pk = event_data['data']['id']
-            value = datetime.utcnow()
-            update_column(conn, table, column, pk_column, pk, value)
-            log_action(file_name, str(id) + ': ' + json.dumps(event_data))
+            try:
+                logger.debug('{}: processing {}'.format(id, event_data))
+                table = event_data['table']
+                column = 'logged_at'
+                pk_column = 'id'
+                pk = event_data['data']['id']
+                value = datetime.utcnow()
+                update_column(conn, table, column, pk_column, pk, value)
+                log_action(file_name, str(id) + ': ' + json.dumps(event_data))
+            except:
+                stable_heap.push(event_data)
+                raise
         sleep(5)
 
 

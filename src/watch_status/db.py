@@ -5,40 +5,16 @@ import select
 import psycopg2
 import psycopg2.extensions
 from psycopg2 import sql
+from psycopg2._psycopg import InterfaceError, OperationalError
+from retry import retry
 
 from watch_status import sig_handler, cfg
 
 logger = logging.getLogger('watch_status.db_event_loop')
 
-class Proxy:
-    """
-    TODO:
-    self db_instance - readonly
-    make db_fields private
-
-    """
-
-    @classmethod
-    def __init__(self, DSN, schema, isolation_level):
-        self.DSN = DSN
-        self.schema = schema
-        self.isolation_level = isolation_level
-
-        conn = psycopg2.connect(DSN)
-        conn.set_isolation_level(isolation_level)
-        set_active_schema(conn, schema)
-        self._conn = conn
 
 
-    def __getattr__(self, item):
-            return getattr(self._conn, item)
-
-
-
-class RetryConnection(psycopg2.extensions.connection):
-    pass
-
-
+@retry(exceptions=(InterfaceError, OperationalError), tries=5, delay=3, logger=logger)
 def get_connection(DSN, schema, isolation_level):
     conn = psycopg2.connect(DSN)
     conn.set_isolation_level(isolation_level)
